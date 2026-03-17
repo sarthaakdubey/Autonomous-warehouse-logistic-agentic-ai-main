@@ -1,0 +1,10 @@
+AUTONOMOUS LOGISTICS RESEARCH REPORT
+==================================================
+
+Query:
+order 1003 details
+
+Analysis:
+| order_id | warehouse | product | quantity | distance_km | transport_mode | delay | picking_time_min |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1003 | Indore | Clothing | 12 | 560 | Truck | Yes | 55 |

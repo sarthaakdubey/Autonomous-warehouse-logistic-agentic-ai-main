@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+streamlit
+
+crewai
+langchain
+langchain-community
+
+chromadb
+
+python-dotenv
+
+tavily-python
+
+groq
+pydantic
+requests
