@@ -3,7 +3,7 @@
 An AI-powered multi-agent system for intelligent warehouse analysis and optimization.. 
 This project uses FastAPI, Streamlit, CrewAI, and RAG (ChromaDB) to provide insights, detect delays, and recommend improvements in logistics operations.
 
----
+----
 
 ## 🧠 Features
 
