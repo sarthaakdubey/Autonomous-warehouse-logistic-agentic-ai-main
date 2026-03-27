@@ -76,6 +76,7 @@ RAG Layer (ChromaDB + Knowledge Base)
       ↓
 LLM (Groq - LLaMA 3) + Tavily Search
 ```
+<img width="2816" height="1536" alt="Gemini_Generated_Image_7c3re37c3re37c3r" src="https://github.com/user-attachments/assets/708037bb-f5bc-408a-a912-86998dbdd460" />
 
 ---
 
