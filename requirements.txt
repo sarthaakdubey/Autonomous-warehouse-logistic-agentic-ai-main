@@ -1,18 +1,35 @@
+# Backend
 fastapi
 uvicorn
+python-multipart
+
+# Frontend
 streamlit
 
+# AI / Agents
 crewai
 langchain
 langchain-community
-
-chromadb
-
-python-dotenv
-
-tavily-python
-
-groq
-pydantic
-requests
 litellm
+groq
+
+# RAG + Embeddings
+chromadb
+sentence-transformers
+tiktoken
+
+# ML backend
+torch
+torchvision
+torchaudio
+
+# PDF processing
+pymupdf
+
+# Utils
+python-dotenv
+requests
+httpx
+
+# Search API
+tavily-python

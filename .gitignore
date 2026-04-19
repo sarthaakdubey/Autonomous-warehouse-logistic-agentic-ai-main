@@ -1,56 +1,49 @@
-# ---------------- ENV FILES ----------------
-.env
-.env.*
-*.env
-
-# ---------------- PYTHON ----------------
+# ---------------- Python ----------------
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.log
 *.sqlite3
 
-# Virtual environments
+# Virtual environment
 venv/
-.venv/
 env/
+ENV/
 
-# ---------------- LOG FILES ----------------
-*.log
+# ---------------- Environment Variables ----------------
+.env
 
-# ---------------- SYSTEM FILES ----------------
+# ---------------- OS Files ----------------
 .DS_Store
 Thumbs.db
 
-# ---------------- IDE / EDITOR ----------------
+# ---------------- IDE ----------------
 .vscode/
 .idea/
 
-# ---------------- STREAMLIT ----------------
+# ---------------- Streamlit ----------------
 .streamlit/
 
-# ---------------- DATA / MODELS ----------------
-vector_db/
+# ---------------- Data / Uploads ----------------
+knowledge_base/
+uploads/
+*.pdf
+*.csv
+
+# ---------------- Vector DB ----------------
 chroma/
+chroma_db/
 *.db
-*.sqlite
-*.parquet
 
-# Chroma cache / embeddings
-.cache/
+# ---------------- Model files ----------------
+*.bin
+*.pt
 *.onnx
-*.tar.gz
 
-# ---------------- NODE (if frontend added later) ----------------
-node_modules/
-
-# ---------------- DOCKER ----------------
+# ---------------- Docker ----------------
 docker-compose.override.yml
 
-# ---------------- TEST / BUILD ----------------
-dist/
-build/
-*.egg-info/
-
-# ---------------- JUPYTER ----------------
-.ipynb_checkpoints/
+# ---------------- Misc ----------------
+*.tmp
+*.bak

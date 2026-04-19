@@ -1,8 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
+import os
+import shutil
+
 from backend.services.analyzer import analyze_warehouse
+from backend.ingest import ingest_file
+from backend.rag.retriever import retrieve_context
 
 app = FastAPI(title="Autonomous Warehouse Research Agent")
+
+UPLOAD_DIR = "knowledge_base"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 # ---------------- REQUEST MODEL ----------------
@@ -10,50 +18,74 @@ class Query(BaseModel):
     question: str
 
 
+# ---------------- FILE UPLOAD API ----------------
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    ingest_file(file_path)
+
+    return {
+        "message": f"✅ File '{file.filename}' uploaded and processed successfully"
+    }
+
+
+# ---------------- CHECK IF DOCUMENT EXISTS ----------------
+def documents_exist():
+    return len(os.listdir(UPLOAD_DIR)) > 0
+
+
 # ---------------- INTENT DETECTION ----------------
 def detect_mode(question: str):
     q = question.lower()
 
-    # Research queries (analysis, reasoning, improvements)
     research_keywords = [
         "why", "how", "improve", "optimize", "analysis",
         "reason", "cause", "technology", "trend", "best practice"
     ]
 
-    # Dataset queries (exact lookup)
     dataset_keywords = [
-        "order", "list", "details", "which", "status", "id"
+        "order", "list", "details", "id"
     ]
 
-    # Priority: research first
+    rag_keywords = [
+        "document", "pdf", "manual", "report", "according", "based on"
+    ]
+
+    # Explicit RAG
+    if any(word in q for word in rag_keywords):
+        return "rag"
+
+    # Explicit research
     if any(word in q for word in research_keywords):
         return "research"
 
+    # Dataset only if very specific
     if any(word in q for word in dataset_keywords):
         return "dataset"
 
-    return "research"  # default fallback
+    return "auto"
 
 
 # ---------------- DATASET HANDLER ----------------
 def handle_dataset_query(question: str):
     q = question.lower()
 
-    # Specific order lookup
     if "order" in q and any(x in q for x in ["details", "id"]):
         return {
             "result": "📦 Order 1003 is delayed due to high picking time (65 mins).",
             "mode": "dataset"
         }
 
-    # Warehouse comparison
     elif "which warehouse" in q:
         return {
             "result": "🏭 Warehouse A has the highest delays.",
             "mode": "dataset"
         }
 
-    # List queries (example)
     elif "list" in q:
         return {
             "result": "📋 Orders: 1001, 1002, 1003 (1003 delayed).",
@@ -61,7 +93,7 @@ def handle_dataset_query(question: str):
         }
 
     return {
-        "result": "⚠️ No exact data found for your query.",
+        "result": "⚠️ No exact dataset match found.",
         "mode": "dataset"
     }
 
@@ -76,17 +108,27 @@ def home():
 def research(query: Query):
     question = query.question
 
-    # Detect query type
-    mode = detect_mode(question)
-
     try:
-        # Dataset mode
+        # 🔥 STEP 1: If documents exist → ALWAYS try RAG first
+        if documents_exist():
+            context = retrieve_context(question)
+
+            # If context found → return RAG
+            if context and len(context.strip()) > 20:
+                return {
+                    "result": f"📄 Document-Based Answer:\n\n{context}",
+                    "mode": "rag"
+                }
+
+        # 🔥 STEP 2: fallback to intent detection
+        mode = detect_mode(question)
+
+        # 🔹 DATASET MODE
         if mode == "dataset":
             return handle_dataset_query(question)
 
-        # Research mode (CrewAI agents)
+        # 🔹 RESEARCH MODE
         result = analyze_warehouse(question)
-
         return {
             "result": result,
             "mode": "research"
@@ -95,5 +137,5 @@ def research(query: Query):
     except Exception as e:
         return {
             "error": str(e),
-            "mode": mode
+            "mode": "error"
         }
